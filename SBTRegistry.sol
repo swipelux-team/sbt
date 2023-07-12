@@ -18,16 +18,27 @@ contract SBTRegistry is OwnableUpgradeable
         _;
     }
 
+    /// @notice Grants permission for a dApp to retrieve user data
+    /// @dev User must have an SBT issued and grants permission by himself
+    /// @param dAppAddress the dApp address permission to be granted to
+    /// @param level user data disclosure level 
     function grantPermission(address dAppAddress, uint256 level) external hasSBT {
         permissions[currentTokenId()][dAppAddress] = level;
         emit DappPemissionGranted(_msgSender(), currentTokenId(), dAppAddress, level);
     }
 
+    /// @notice Revokes permission for a dApp to retrieve user data
+    /// @dev User must have an SBT issued and grants permission by himself
+    /// @param dAppAddress the dApp address permission to be revoked from
     function revokePermission(address dAppAddress) external hasSBT {
         delete permissions[currentTokenId()][dAppAddress];
         emit DappPemissionRevoked(_msgSender(), currentTokenId(), dAppAddress);
     }
 
+    /// @notice Returns allowance for a dApp to retrieve user data of specific level
+    /// @param dAppAddress the dApp address permission to be checked for
+    /// @param userAddress the user address permission to be revoked for
+    /// @param level disclosure level to be check for
     function isAllowed(address dAppAddress, address userAddress, uint256 level) external view returns(bool) {
         uint256 tokenId = sbt.currentTokenId(userAddress);
         require(tokenId != 0, "user has no SBT issued");
