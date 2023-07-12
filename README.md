@@ -4,7 +4,7 @@ SBT-functionality related smart contracts
 ## IERC5192
 
 ### Contract
-IERC5192 : contracts/IERC5192.sol
+IERC5192 : IERC5192.sol
 
  --- 
 ### Functions:
