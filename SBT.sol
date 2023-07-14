@@ -14,13 +14,11 @@ contract SBT is ERC5192, Ownable {
     }
 
     /// @notice Mints SBT to an address
-    /// @dev Only contract owner (SBT issuer) can mint SBTs
     /// @param tokenId The identifier for an SBT.
-    /// @param to The SBT reciever address.
-    function safeMint(address to, uint256 tokenId) external onlyOwner {
-        require(userCurrentTokenId[to] == uint256(0), "user already has an SBT issued");
-        _safeMint(to, tokenId);
-        userCurrentTokenId[to] = tokenId;
+    function safeMint(uint256 tokenId) external {
+        require(userCurrentTokenId[_msgSender()] == uint256(0), "user already has an SBT issued");
+        _safeMint(_msgSender(), tokenId);
+        userCurrentTokenId[_msgSender()] = tokenId;
         if (locked) emit Locked(tokenId);
     }
 
