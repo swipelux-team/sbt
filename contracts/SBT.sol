@@ -3,13 +3,18 @@ pragma solidity ^0.8.0;
 
 import {ERC5192} from "./ERC5192.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import {Verifier} from "./Verifier.sol";
 
 contract SBT is ERC5192, Ownable {
     bool private locked;
     mapping(address => uint256) private userCurrentTokenId;
+    // address public verifier;
 
-    constructor(bool _isLocked) ERC5192("Zero ID", "ZEROID", _isLocked) {
-        locked = _isLocked;
+    constructor(
+        // address verifierAddress
+        ) ERC5192("Zero ID", "ZEROID", true) {
+        locked = true;
+        // verifier = verifierAddress;
     }
 
     /// @notice Mints SBT to an address
@@ -59,4 +64,13 @@ contract SBT is ERC5192, Ownable {
     {
         return userCurrentTokenId[userAddress];
     }
+
+    // function verifyProof(
+    //     uint256[2] memory a,
+    //     uint256[2][2] memory b,
+    //     uint256[2] memory c,
+    //     uint256[77] memory input
+    // ) public view returns (bool) {
+    //     return Verifier(verifier).verifyProof(a, b, c, input);
+    // }
 }
