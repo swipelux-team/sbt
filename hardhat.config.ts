@@ -1,5 +1,6 @@
 import {HardhatUserConfig} from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
+import {ethers} from "hardhat";
 
 const config: HardhatUserConfig = {
     solidity: "0.8.19",
@@ -23,9 +24,10 @@ module.exports = {
 
         // Polygon (Matic) Mainnet
         polygon: {
-            url: `https://polygon-rpc.com`,
-            chainId: 137, // Polygon Mainnet chain ID
-            accounts: [process.env.PRIVATE_KEY], // Replace with your private key
+            url: `https://polygon-rpc.com/`,
+            chainId: 137,
+            accounts: [process.env.PRIVATE_KEY],
+            gasPrice: 93_000_000_000
         }
     }
 };
