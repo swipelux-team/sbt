@@ -26,8 +26,12 @@ module.exports = {
         polygon: {
             url: `https://polygon-rpc.com/`,
             chainId: 137,
-            accounts: [process.env.PRIVATE_KEY],
-            gasPrice: 93_000_000_000
+            accounts: [process.env.PRIVATE_KEY]
+        },
+        mumbai: {
+            url: 'https://polygon-mumbai.blockpi.network/v1/rpc/public',
+            chainId: 80001,
+            accounts: [process.env.PRIVATE_KEY]
         }
     }
 };

@@ -1,22 +1,35 @@
 import {ethers} from "hardhat";
+import {BaseContract} from "ethers";
+import {EnvRequired} from "./util";
 
-async function deploySbt() {
-    console.log("secret key is " + process.env.PRIVATE_KEY)
-    const sbt = await ethers.deployContract("SBT", ['0x6f6E19781600d6B06D64A6b86431FB7dB3E919e0']);
+const VERIFIER_ADDRESS = new EnvRequired('VERIFIER_ADDRESS');
+const NETWORK_NAME = new EnvRequired('NETWORK_NAME');
+
+async function sbtBorn() {
+    console.log(`Deploying SBT to ${NETWORK_NAME.value()}`);
+    const sbt = await ethers.deployContract(
+        "SBT", [VERIFIER_ADDRESS.value()]
+    );
     await sbt.waitForDeployment();
     console.log(`SBT deployed to ${sbt.target}`);
+    return sbt;
 }
 
-async function deployRegistry() {
-    console.log("secret key is " + process.env.PRIVATE_KEY)
-    const sbt = await ethers.deployContract("SBTRegistry", ['0xe3205e2A207815F93F0EdC92Aff491d3313a141d']);
-    await sbt.waitForDeployment();
-    console.log(`SBT deployed to ${sbt.target}`);
+async function registryBorn(sbtContract: BaseContract) {
+    const registry = await ethers.deployContract(
+        "SBTRegistry", [
+            sbtContract.target
+        ]
+    );
+    await registry.waitForDeployment();
+    console.log(`registry deployed to ${registry.target}`);
+    return registry;
 }
 
 
-
-deployRegistry().catch((error) => {
-    console.error(error);
-    process.exitCode = 1;
-});
+sbtBorn().then(registryBorn).catch(
+    error => {
+        console.error(error);
+        process.exitCode = 1;
+    }
+);

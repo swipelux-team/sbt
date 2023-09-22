@@ -10,9 +10,7 @@ contract SBT is ERC5192, Ownable {
     mapping(address => uint256) private userCurrentTokenId;
     VerifierSig public verifier;
 
-    constructor(
-        address verifierAddress
-        ) ERC5192("Zero ID", "ZEROID", true) {
+    constructor(address verifierAddress) ERC5192("Zero ID", "ZEROID", true) {
         locked = true;
         verifier = VerifierSig(verifierAddress);
     }
@@ -58,9 +56,9 @@ contract SBT is ERC5192, Ownable {
     /// @notice Returns current user SBT id: there can be only one SBT per address at a time.
     /// @param userAddress The identifier for an SBT to be revoked
     function currentTokenId(address userAddress)
-        external
-        view
-        returns (uint256)
+    external
+    view
+    returns (uint256)
     {
         return userCurrentTokenId[userAddress];
     }
