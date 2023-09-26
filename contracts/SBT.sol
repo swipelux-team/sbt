@@ -7,23 +7,36 @@ import {VerifierSig} from "./Verifier.sol";
 
 contract SBT is ERC5192, Ownable {
     bool private locked;
+    uint256 private currentId;
+
+    struct NFTMetadata {
+        string name;
+        string description;
+        string image;
+    }
+
     mapping(address => uint256) private userCurrentTokenId;
     VerifierSig public verifier;
+    NFTMetadata public nftMetadata = NFTMetadata(
+        "ZeroID",
+        "Identity Passport",
+        "https://ipfs.io/ipfs/QmQqzMTavQgT4f4T5v6PWBp7XNKtoPmC9jvn12WPT3gkSE"
+    );
 
     constructor(address verifierAddress) ERC5192("Zero ID", "ZEROID", true) {
         locked = true;
         verifier = VerifierSig(verifierAddress);
+        currentId = 0;
     }
 
-    /// @notice Mints SBT to an address
-    /// @param tokenId The identifier for an SBT.
-    function safeMint(uint256 tokenId) external {
+    function safeMint(address targetAddress) external onlyOwner {
         require(
-            userCurrentTokenId[_msgSender()] == uint256(0),
+            userCurrentTokenId[targetAddress] == uint256(0),
             "user already has an SBT issued"
         );
-        _safeMint(_msgSender(), tokenId);
-        userCurrentTokenId[_msgSender()] = tokenId;
+        uint256 tokenId = ++currentId;
+        _safeMint(targetAddress, tokenId);
+        userCurrentTokenId[targetAddress] = tokenId;
         if (locked) emit Locked(tokenId);
     }
 
@@ -38,6 +51,10 @@ contract SBT is ERC5192, Ownable {
         uint256 tokenId = userCurrentTokenId[userAddress];
         delete userCurrentTokenId[userAddress];
         _burn(tokenId);
+    }
+
+    function tokenURI(uint256 tokenID) public override view returns (string memory) {
+        return "https://ipfs.io/ipfs/QmQqzMTavQgT4f4T5v6PWBp7XNKtoPmC9jvn12WPT3gkSE";
     }
 
     /// @notice Revokes particular SBT making no longer accessible by user
@@ -70,5 +87,9 @@ contract SBT is ERC5192, Ownable {
         uint[11] memory input
     ) public view returns (bool) {
         return verifier.verifyProof(a, b, c, input);
+    }
+
+    function getNFTMetadata(uint256 tokenId) public view returns (NFTMetadata memory) {
+        return nftMetadata;
     }
 }
