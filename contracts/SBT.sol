@@ -5,9 +5,20 @@ import {ERC5192} from "./ERC5192.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import {VerifierSig} from "./Verifier.sol";
 
-contract SBT is ERC5192, Ownable {
+
+interface IERC1155MetadataURI {
+    /**
+     * @dev Returns the URI for token type `id`.
+     *
+     * If the `\{id\}` substring is present in the URI, it must be replaced by
+     * clients with the actual token type ID.
+     */
+    function uri(uint256 id) external view returns (string memory);
+}
+
+contract SBT is ERC5192, Ownable, IERC1155MetadataURI {
     bool private locked;
-    uint256 private currentId;
+    uint256 public currentId;
 
     struct NFTMetadata {
         string name;
@@ -17,11 +28,6 @@ contract SBT is ERC5192, Ownable {
 
     mapping(address => uint256) private userCurrentTokenId;
     VerifierSig public verifier;
-    NFTMetadata public nftMetadata = NFTMetadata(
-        "ZeroID",
-        "Identity Passport",
-        "https://ipfs.io/ipfs/QmQqzMTavQgT4f4T5v6PWBp7XNKtoPmC9jvn12WPT3gkSE"
-    );
 
     constructor(address verifierAddress) ERC5192("Zero ID", "ZEROID", true) {
         locked = true;
@@ -38,6 +44,10 @@ contract SBT is ERC5192, Ownable {
         _safeMint(targetAddress, tokenId);
         userCurrentTokenId[targetAddress] = tokenId;
         if (locked) emit Locked(tokenId);
+    }
+
+    function uri(uint256 _id) public override view returns (string memory) {
+        return "https://ipfs.io/ipfs/QmQqzMTavQgT4f4T5v6PWBp7XNKtoPmC9jvn12WPT3gkSE";
     }
 
     /// @notice Revokes particular users' SBT making no longer accessible
@@ -87,9 +97,5 @@ contract SBT is ERC5192, Ownable {
         uint[11] memory input
     ) public view returns (bool) {
         return verifier.verifyProof(a, b, c, input);
-    }
-
-    function getNFTMetadata(uint256 tokenId) public view returns (NFTMetadata memory) {
-        return nftMetadata;
     }
 }
